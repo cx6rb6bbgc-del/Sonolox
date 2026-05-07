@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SONOLOX | DJ Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --accent: #7000ff;
+            --bg-dark: #050505;
+            --whatsapp: #25D366;
+            --gold: #ffd700;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-dark);
+            color: #fff;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            position: fixed; top: 0; left: 0; width: 100%; height: 80px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 25px; box-sizing: border-box; z-index: 1000;
+            background: rgba(5, 5, 5, 0.7); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .navbar-logo { width: 160px; filter: drop-shadow(0 0 5px rgba(0, 242, 255, 0.2)); }
+        
+        .lang-control { display: flex; align-items: center; gap: 15px; }
+        .lang-btn { cursor: pointer; font-weight: 900; font-size: 0.7rem; border: 1px solid var(--primary); padding: 5px 8px; border-radius: 4px; color: var(--primary); }
+
+        .menu-toggle { width: 30px; height: 20px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; }
+        .menu-toggle span { width: 100%; height: 3px; background: var(--primary); transition: 0.3s; }
+
+        /* --- MENU PLEIN ÉCRAN --- */
+        .full-menu {
+            position: fixed; top: 0; right: -100%; width: 100%; height: 100%;
+            background: rgba(5, 5, 5, 0.98); backdrop-filter: blur(20px);
+            z-index: 1001; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; 
+            transition: 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        .full-menu.active { right: 0; }
+        .menu-link { 
+            color: #fff; text-decoration: none; font-size: 1.4rem; font-weight: 700; 
+            margin: 12px 0; text-transform: uppercase; letter-spacing: 3px; 
+            display: flex; align-items: center; transition: 0.3s; cursor: pointer;
+        }
+        .menu-link i { margin-right: 15px; color: var(--primary); font-size: 1.2rem; }
+        
+        .social-links-menu { margin-top: 35px; display: flex; gap: 25px; }
+        .social-links-menu a { font-size: 2rem; color: #fff; transition: 0.3s; }
+        .social-links-menu a:hover { color: var(--primary); transform: translateY(-5px); }
+
+        .close-menu { position: absolute; top: 25px; right: 25px; font-size: 2.5rem; cursor: pointer; color: var(--primary); }
+
+        /* --- BOUTON WHATSAPP FLOTTANT --- */
+        .whatsapp-float {
+            position: fixed; bottom: 30px; right: 30px;
+            width: 60px; height: 60px; background-color: var(--whatsapp);
+            color: #fff; border-radius: 50px; text-align: center; font-size: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 999;
+            display: flex; align-items: center; justify-content: center;
+            text-decoration: none; transition: 0.3s;
+            animation: pulse-wa 2s infinite;
+        }
+        @keyframes pulse-wa {
+            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+
+        /* --- FENÊTRE DEVIS (MODALE) --- */
+        .modal-devis {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 3000;
+            display: none; align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: #111; padding: 40px; border-radius: 20px;
+            border: 2px solid var(--primary); text-align: center;
+            max-width: 400px; width: 85%; box-shadow: 0 0 30px var(--primary);
+        }
+        .email-display {
+            background: #222; padding: 15px; border-radius: 10px;
+            margin: 20px 0; font-weight: 700; border: 1px dashed var(--primary);
+            word-break: break-all; color: var(--primary); font-size: 1.1rem;
+        }
+        .copy-btn {
+            background: var(--primary); color: #000; border: none;
+            padding: 12px 25px; border-radius: 50px; font-weight: 900;
+            cursor: pointer; text-transform: uppercase; transition: 0.3s;
+        }
+
+        /* --- SLIDESHOW & GALERIE --- */
+        .slideshow-container {
+            position: relative; width: 100%; height: 80vh;
+            background-color: #000; overflow: hidden;
+            border-bottom: 2px solid var(--primary);
+            transition: 0.5s;
+        }
+        .slideshow-container.fullscreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            z-index: 2000; border: none; background: #000;
+        }
+        .close-gallery {
+            position: absolute; top: 30px; right: 30px; font-size: 3rem;
+            color: var(--primary); z-index: 2001; cursor: pointer; display: none;
+        }
+        .slideshow-container.fullscreen .close-gallery { display: block; }
+        .slide {
+            position: absolute; width: 100%; height: 100%; opacity: 0;
+            transition: opacity 1s ease-in-out; 
+            background-size: contain; background-repeat: no-repeat; background-position: center 10%;
+        }
+        .slide.active { opacity: 1; }
+        .dots-container {
+            position: absolute; bottom: 20px; width: 100%;
+            display: flex; justify-content: center; gap: 10px; z-index: 15;
+        }
+        .dot {
+            width: 10px; height: 10px; background: rgba(255, 255, 255, 0.3);
+            border: 1px solid var(--primary); border-radius: 50%; cursor: pointer; transition: 0.3s;
+        }
+        .dot.active { background: var(--primary); box-shadow: 0 0 10px var(--primary); transform: scale(1.2); }
+        .prev, .next {
+            cursor: pointer; position: absolute; top: 50%; width: auto; padding: 16px;
+            margin-top: -22px; color: var(--primary); font-weight: bold; font-size: 25px;
+            z-index: 10; background: rgba(0,0,0,0.3); text-decoration: none;
+        }
+        .next { right: 0; border-radius: 5px 0 0 5px; }
+        .prev { left: 0; border-radius: 0 5px 5px 0; }
+
+        /* --- CADRE TITRE --- */
+        .screen-container {
+            position: relative; width: 92%; max-width: 1100px;
+            aspect-ratio: 21 / 9; margin: -80px auto 40px auto;
+            border-radius: 15px; overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.85); 
+            backdrop-filter: blur(5px); z-index: 5;
+            border: 2px solid var(--primary);
+            animation: neonFlicker 5s infinite;
+        }
+
+        @keyframes neonFlicker {
+            0%, 2%, 4%, 6% { opacity: 0.5; border-color: rgba(0, 242, 255, 0.1); box-shadow: none; }
+            1%, 3%, 5% { opacity: 1; border-color: var(--primary); box-shadow: 0 0 20px var(--primary); }
+            7%, 89% { opacity: 1; border-color: var(--primary); box-shadow: 0 0 20px rgba(0, 242, 255, 0.4), 0 20px 50px rgba(0,0,0,0.9); }
+            90%, 94%, 100% { opacity: 1; }
+            92% { opacity: 0.7; }
+        }
+
+        .content-overlay { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .page-title { font-weight: 900; font-size: 3.5rem; margin: 0; letter-spacing: 5px; background: linear-gradient(90deg, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; }
+        
+        .trust-bar { color: var(--primary); font-weight: 700; margin: 15px 0 0 0; letter-spacing: 3px; font-size: 0.9rem; text-align: center; text-transform: uppercase; }
+
+        /* --- DESCRIPTION --- */
+        .section-container { max-width: 900px; margin: 0 auto; padding: 40px 25px; text-align: left; }
+        .description-text { line-height: 1.8; color: #ccc; font-size: 1.05rem; }
+        .description-text b { color: #fff; font-weight: 700; }
+        .description-highlight { color: var(--primary); font-weight: 700; margin-bottom: 20px; font-size: 1.3rem; text-align: center; display: block; }
+
+        .cta-group { display: flex; gap: 15px; justify-content: center; margin-top: 40px; flex-wrap: wrap; }
+        .btn { padding: 18px 30px; border-radius: 50px; text-decoration: none; font-weight: 700; text-transform: uppercase; font-size: 0.8rem; transition: 0.4s; display: flex; align-items: center; justify-content: center; min-width: 220px; }
+        .btn-whatsapp { background: #25D366; color: #fff; }
+        .btn-mail { background: linear-gradient(45deg, var(--primary), var(--accent)); color: #fff; }
+
+        @media (max-width: 768px) {
+            .slideshow-container { height: 60vh; }
+            .page-title { font-size: 2.2rem; }
+            .trust-bar { font-size: 0.65rem; letter-spacing: 1px; }
+            .screen-container { aspect-ratio: 16/9; margin-top: -40px; }
+            .full-menu a.menu-link { font-size: 1.3rem; }
+            .social-links-menu a { font-size: 2.2rem; }
+            .whatsapp-float { bottom: 20px; right: 20px; width: 50px; height: 50px; font-size: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="https://wa.me/32479119480" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <nav class="navbar">
+        <a href="index.html">
+            <img src="https://i.ibb.co/k6Xb6j2y/Sonolox-Logo-blanc.png" alt="SONOLOX" class="navbar-logo">
+        </a>
+        <div class="lang-control">
+            <div id="lang-btn" class="lang-btn" onclick="toggleLanguage()">EN</div>
+            <div class="menu-toggle" onclick="toggleMenu()">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="full-menu" id="navMenu">
+        <div class="close-menu" onclick="toggleMenu()">✕</div>
+        <a href="index.html" class="menu-link" id="nav-home" onclick="toggleMenu()">Accueil</a>
+        <a href="javascript:void(0)" class="menu-link link-devis" id="nav-devis" onclick="openDevis()">
+            <i class="fas fa-file-invoice-dollar"></i> Devis
+        </a>
+        <a href="javascript:void(0)" class="menu-link" id="nav-galerie" onclick="openGallery()">
+            <i class="fas fa-images"></i> Galerie Photo
+        </a>
+        <a href="https://drive.google.com/drive/folders/1D42Eu2H9iVTDNLKd70NJqa9K_J3rdCl_" class="menu-link link-press" target="_blank">
+            <i class="fas fa-download"></i> Press Kit
+        </a>
+        <div class="social-links-menu">
+            <a href="https://on.soundcloud.com/avw1i8eSGn6XkEqsZu" target="_blank"><i class="fab fa-soundcloud"></i></a>
+            <a href="https://www.instagram.com/sonolox_officiel" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@djsonolox" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="https://www.facebook.com/share/1B13xEVUJR/" target="_blank"><i class="fab fa-facebook-f"></i></a>
+        </div>
+    </div>
+
+    <div class="modal-devis" id="modalDevis" onclick="closeDevis()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h2 id="modal-title" style="color: var(--primary); margin: 0;">CONTACT DEVIS</h2>
+            <p id="modal-p">Envoyez votre demande par mail :</p>
+            <div class="email-display" id="emailText">Loic.bry@outlook.com</div>
+            <button class="copy-btn" id="modal-btn" onclick="copyEmail()">Copier l'adresse</button>
+            <p style="margin-top: 30px; cursor: pointer; text-decoration: underline;" id="modal-close" onclick="closeDevis()">Fermer</p>
+        </div>
+    </div>
+
+    <div class="slideshow-container" id="mainSlideshow">
+        <div class="close-gallery" onclick="closeGallery()">✕</div>
+        <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
+        <a class="next" onclick="changeSlide(1)">&#10095;</a>
+        <div class="slide active" style="background-image: url('https://i.ibb.co/DD2wYrJT/IMG-8974.jpg');"></div>
+        <div class="slide" style="background-image: url('https://i.ibb.co/Z6tRCfBJ/IMG-8976.jpg');"></div>
+        <div class="slide" style="background-image: url('https://i.ibb.co/KcR9VtmR/IMG-0615.jpg');"></div>
+        <div class="slide" style="background-image: url('https://i.ibb.co/60npWgwm/IMG-0606.jpg');"></div>
+        <div class="slide" style="background-image: url('https://i.ibb.co/k2sWrcZv/IMG-0291.jpg');"></div>
+        <div class="slide" style="background-image: url('https://i.ibb.co/G32FsT9L/IMG-1153.jpg');"></div>
+        <div class="slide" style="background-image: url('https://i.ibb.co/Fqqcq72s/IMG-1513.jpg');"></div>
+        <div class="dots-container">
+            <span class="dot active" onclick="jumpToSlide(0)"></span>
+            <span class="dot" onclick="jumpToSlide(1)"></span>
+            <span class="dot" onclick="jumpToSlide(2)"></span>
+            <span class="dot" onclick="jumpToSlide(3)"></span>
+            <span class="dot" onclick="jumpToSlide(4)"></span>
+            <span class="dot" onclick="jumpToSlide(5)"></span>
+            <span class="dot" onclick="jumpToSlide(6)"></span>
+        </div>
+    </div>
+
+    <main class="screen-container">
+        <div class="content-overlay">
+            <h1 class="page-title">DJ SONOLOX</h1>
+            <p class="trust-bar" id="trust-bar">18 ANS D'EXPÉRIENCE | MATÉRIEL PRO | TOUS ÉVÉNEMENTS</p>
+        </div>
+    </main>
+
+    <section class="section-container">
+        <span class="description-highlight" id="desc-highlight">L’expérience musicale de vos événements</span>
+        <div class="description-text" id="main-desc">
+            <!-- Injecté par JS -->
+        </div>
+        <div class="cta-group">
+            <a href="https://wa.me/32479119480" class="btn btn-whatsapp">📱 +32 479 11 94 80</a>
+            <a href="javascript:void(0)" onclick="openDevis()" class="btn btn-mail" id="mail-btn">✉️ Loic.bry@outlook.com</a>
+        </div>
+    </section>
+
+    <script>
+        // --- SYSTÈME DE TRADUCTION ---
+        let currentLang = 'fr';
+        const translations = {
+            fr: {
+                btn: "EN",
+                trust: "18 ANS D'EXPÉRIENCE | MATÉRIEL PRO | TOUS ÉVÉNEMENTS",
+                highlight: "L’expérience musicale de vos événements",
+                mail: "✉️ Loic.bry@outlook.com",
+                home: "Accueil", devis: "Devis", galerie: "Galerie Photo",
+                mTitle: "CONTACT DEVIS", mP: "Envoyez votre demande par mail :", mBtn: "Copier l'adresse", mClose: "Fermer",
+                desc: `<p>Avec plus de <b>18 ans de passion</b> derrière les platines, Sonolox est un DJ généraliste incontournable en Belgique. Fort d’une solide expérience acquise dans les fêtes les plus populaires de <b>Chimay, Couvin, Philippeville, Beaumont, jusque Charleroi</b> et même au-delà des frontières, jusqu’en <b style="color: #fff; font-weight: 900;">FRANCE</b> (<b style="color: #fff; font-weight: 900;">Colmar, Lille ou même Paris</b>), il sait faire vibrer tous les publics.</p>
+                <p>Réputé pour sa <b>polyvalence musicale</b> et sa capacité à s’adapter à l’ambiance, il enchaîne les sets dynamiques et les animations micro avec aisance. Que ce soit pour une ducasse, une soirée privée ou un événement public, il apporte une énergie communicative et une ambiance sur-mesure.</p>
+                <p>Il est un habitué des grands rendez-vous régionaux comme l’<b>Open de Romedenne</b>, les <b>Apéros Chimaciens</b>, les <b>soirées Halloween de Baileux</b>, le <b>Chimay Spring Festival</b> et bien d’autres événements tels que les <b>fêtes de Wallonie à Namur</b>.</p>
+                <p>DJ Sonolox, c’est aussi des résidences régulières au <b>Café des Touristes</b> à Virelles et au <b>Phiphi Bar</b> à Philippeville, où il fait danser les habitués à chaque set.</p>
+                <p style="text-align: center; margin-top: 30px;"><i>Faites confiance à DJ Sonolox pour transformer votre soirée en un moment inoubliable.</i></p>`
+            },
+            en: {
+                btn: "FR",
+                trust: "18 YEARS EXPERIENCE | PRO EQUIPMENT | ALL EVENTS",
+                highlight: "The musical experience for your events",
+                mail: "✉️ Get a quote",
+                home: "Home", devis: "Quote", galerie: "Gallery",
+                mTitle: "GET A QUOTE", mP: "Send your request by email:", mBtn: "Copy Email", mClose: "Close",
+                desc: `<p>With over <b>18 years of passion</b> behind the decks, Sonolox is a key open-format DJ in Belgium. With solid experience from the most popular parties in <b>Chimay, Couvin, Philippeville, Beaumont, to Charleroi</b> and even across borders into <b style="color: #fff; font-weight: 900;">FRANCE</b> (<b style="color: #fff; font-weight: 900;">Colmar, Lille or Paris</b>), he knows how to thrill every audience.</p>
+                <p>Renowned for his <b>musical versatility</b> and ability to adapt to the vibe, he delivers dynamic sets and pro hosting with ease. Whether for a local festival, a private party, or a public event, he brings communicative energy.</p>
+                <p>He is a regular at major events such as the <b>Open de Romedenne</b>, <b>Apéros Chimaciens</b>, <b>Baileux Halloween parties</b>, and the <b>Fêtes de Wallonie in Namur</b>.</p>
+                <p>DJ Sonolox also holds regular residencies at the <b>Café des Touristes</b> (Virelles) and <b>Phiphi Bar</b> (Philippeville), keeping the crowd dancing at every set.</p>
+                <p style="text-align: center; margin-top: 30px;"><i>Trust DJ Sonolox to turn your party into an unforgettable moment.</i></p>`
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = (currentLang === 'fr') ? 'en' : 'fr';
+            updateContent();
+        }
+
+        function updateContent() {
+            const t = translations[currentLang];
+            document.getElementById('lang-btn').innerText = t.btn;
+            document.getElementById('trust-bar').innerText = t.trust;
+            document.getElementById('desc-highlight').innerText = t.highlight;
+            document.getElementById('mail-btn').innerText = t.mail;
+            document.getElementById('main-desc').innerHTML = t.desc;
+            document.getElementById('nav-home').innerText = t.home;
+            document.getElementById('nav-devis').innerHTML = `<i class="fas fa-file-invoice-dollar"></i> ${t.devis}`;
+            document.getElementById('nav-galerie').innerHTML = `<i class="fas fa-images"></i> ${t.galerie}`;
+            document.getElementById('modal-title').innerText = t.mTitle;
+            document.getElementById('modal-p').innerText = t.mP;
+            document.getElementById('modal-btn').innerText = t.mBtn;
+            document.getElementById('modal-close').innerText = t.mClose;
+        }
+
+        // --- TON SCRIPT ORIGINAL ---
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        const slideshow = document.getElementById('mainSlideshow');
+        let autoPlay = setInterval(() => changeSlide(1), 5000);
+
+        function toggleMenu() { document.getElementById('navMenu').classList.toggle('active'); }
+        function openDevis() { if(document.getElementById('navMenu').classList.contains('active')) toggleMenu(); document.getElementById('modalDevis').style.display = 'flex'; }
+        function closeDevis() { document.getElementById('modalDevis').style.display = 'none'; }
+        function copyEmail() { navigator.clipboard.writeText("Loic.bry@outlook.com").then(() => { const b = document.getElementById('modal-btn'); b.innerText = (currentLang === 'fr' ? "COPIÉ !" : "COPIED!"); setTimeout(() => b.innerText = translations[currentLang].mBtn, 2000); }); }
+        function openGallery() { toggleMenu(); slideshow.classList.add('fullscreen'); document.body.style.overflow = 'hidden'; }
+        function closeGallery() { slideshow.classList.remove('fullscreen'); document.body.style.overflow = 'auto'; }
+        function updateSlides() { slides.forEach(s => s.classList.remove('active')); dots.forEach(d => d.classList.remove('active')); slides[currentSlide].classList.add('active'); dots[currentSlide].classList.add('active'); }
+        function changeSlide(direction) { clearInterval(autoPlay); currentSlide = (currentSlide + direction + slides.length) % slides.length; updateSlides(); autoPlay = setInterval(() => changeSlide(1), 5000); }
+        function jumpToSlide(index) { clearInterval(autoPlay); currentSlide = index; updateSlides(); autoPlay = setInterval(() => changeSlide(1), 5000); }
+
+        updateContent();
+    </script>
+
+</body>
+</html>

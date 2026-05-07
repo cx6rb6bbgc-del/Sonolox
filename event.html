@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SONOLOX | Événementiel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ffffff;
+            --gold: #d4af37;
+            --gold-glow: rgba(212, 175, 55, 0.7);
+            --bg-dark: #050505;
+            --whatsapp: #25D366;
+        }
+
+        /* --- SYSTÈME DE TRANSITION --- */
+        #fade-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: black; z-index: 9999; pointer-events: none;
+            opacity: 1;
+            transition: opacity 0.6s ease-in-out;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-dark);
+            color: #fff;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            position: fixed; top: 0; left: 0; width: 100%; height: 90px;
+            z-index: 1000; display: flex; justify-content: space-between; align-items: center;
+            padding: 0 25px; box-sizing: border-box;
+            background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .navbar-logo { height: 75px; width: auto; animation: neonStable 6s infinite ease-in-out; }
+        
+        @keyframes neonStable {
+            0%, 100% { filter: brightness(1.3) drop-shadow(0 0 15px #fff); }
+            50% { filter: brightness(1.6) drop-shadow(0 0 25px #fff); }
+        }
+
+        .nav-controls { display: flex; align-items: center; gap: 20px; }
+        .lang-btn { cursor: pointer; font-weight: 900; font-size: 0.7rem; border: 1px solid var(--gold); padding: 5px 8px; border-radius: 4px; color: var(--gold); }
+        .menu-toggle { width: 35px; height: 25px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; }
+        .menu-toggle span { width: 100%; height: 3px; background: var(--gold); }
+
+        /* --- WHATSAPP FLOTTANT --- */
+        .whatsapp-float {
+            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+            background-color: var(--whatsapp); color: #fff; border-radius: 50px;
+            text-align: center; font-size: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 2000; display: flex; align-items: center; justify-content: center;
+            text-decoration: none; transition: 0.3s;
+        }
+
+        /* --- MENU --- */
+        .full-menu {
+            position: fixed; top: 0; right: -100%; width: 100%; height: 100%;
+            background: rgba(5, 5, 5, 0.98); backdrop-filter: blur(20px);
+            z-index: 1001; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; transition: 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        .full-menu.active { right: 0; }
+        .menu-link { color: #fff; text-decoration: none; font-size: 1.4rem; font-weight: 700; margin: 12px 0; text-transform: uppercase; letter-spacing: 3px; cursor: pointer; }
+        .menu-link i { margin-right: 15px; color: var(--gold); }
+        .close-menu { position: absolute; top: 25px; right: 25px; font-size: 2.5rem; cursor: pointer; color: var(--gold); }
+        
+        .social-links-menu { margin-top: 35px; display: flex; gap: 25px; }
+        .social-links-menu a { font-size: 2rem; color: var(--gold); transition: 0.3s; }
+        .social-links-menu a:hover { color: #fff; transform: translateY(-5px); }
+
+        /* --- SLIDESHOW --- */
+        .slideshow-container {
+            position: relative; width: 100%; height: 80vh;
+            background-color: #000; overflow: hidden;
+            border-bottom: 2px solid var(--gold);
+        }
+        .slide { 
+            position: absolute; width: 100%; height: 100%; opacity: 0; 
+            transition: opacity 0.8s ease-in-out; 
+            background-size: cover; 
+            background-position: center 30%; 
+        }
+        .slide.active { opacity: 1; }
+
+        .prev, .next {
+            cursor: pointer; position: absolute; top: 50%; width: auto; padding: 20px;
+            margin-top: -30px; color: var(--gold); font-weight: bold; font-size: 24px;
+            transition: 0.3s; border-radius: 0 3px 3px 0; user-select: none; z-index: 10;
+            background: rgba(0,0,0,0.2); text-decoration: none;
+        }
+        .next { right: 0; border-radius: 3px 0 0 3px; }
+
+        /* --- CADRE TITRE --- */
+        .screen-container {
+            position: relative; width: 92%; max-width: 1100px;
+            aspect-ratio: 21 / 9; margin: -80px auto 40px auto;
+            border-radius: 15px; overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.85); 
+            backdrop-filter: blur(5px); z-index: 5;
+            border: 2px solid var(--gold);
+            animation: neonFlickerGold 5s infinite;
+            display: flex; justify-content: center; align-items: center;
+        }
+        @keyframes neonFlickerGold {
+            0%, 2%, 4%, 6% { border-color: rgba(212, 175, 55, 0.1); box-shadow: none; }
+            1%, 3%, 5% { border-color: var(--gold); box-shadow: 0 0 20px var(--gold); }
+            7%, 89% { border-color: var(--gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4), 0 20px 50px rgba(0,0,0,0.9); }
+        }
+
+        .content-overlay { text-align: center; width: 100%; transform: translateY(-5px); }
+        .page-title { font-weight: 900; font-size: 3rem; margin: 0; letter-spacing: 8px; color: var(--gold); text-transform: uppercase; text-shadow: 0 0 15px var(--gold-glow); line-height: 1.2; }
+        .sur-mesure-text { color: #fff; font-weight: 300; margin-top: 18px; letter-spacing: 4px; font-size: 0.95rem; text-transform: uppercase; display: block; opacity: 0.8; }
+
+        /* --- DESCRIPTION --- */
+        .section-container { max-width: 900px; margin: 0 auto; padding: 40px 25px; text-align: center; }
+        .description-highlight { color: var(--gold); font-weight: 700; margin-bottom: 25px; font-size: 1.4rem; text-transform: uppercase; display: block; border-bottom: 1px solid rgba(212, 175, 55, 0.3); padding-bottom: 10px; }
+        .description-text { line-height: 1.8; color: #ccc; font-size: 1.1rem; text-align: left; }
+
+        /* --- BOUTONS --- */
+        .cta-group { display: flex; gap: 15px; justify-content: center; margin-top: 40px; flex-wrap: wrap; }
+        .btn { padding: 18px 30px; border-radius: 50px; text-decoration: none; font-weight: 700; text-transform: uppercase; font-size: 0.8rem; transition: 0.4s; display: flex; align-items: center; justify-content: center; min-width: 220px; overflow: hidden; position: relative;}
+        
+        .btn::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        .btn:hover::after { left: 100%; }
+
+        .btn-whatsapp { background: var(--whatsapp); color: #fff; }
+        .btn-mail { background: linear-gradient(45deg, var(--gold), #8a6d3b); color: #fff; }
+
+        /* --- MODALE --- */
+        .modal-devis { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 3000; display: none; align-items: center; justify-content: center; }
+        .modal-content { background: #111; padding: 40px; border-radius: 20px; border: 2px solid var(--gold); text-align: center; max-width: 400px; width: 85%; box-shadow: 0 0 30px var(--gold); }
+        
+        footer { padding: 40px 20px; text-align: center; border-top: 1px solid rgba(212, 175, 55, 0.1); }
+        .company-id { font-size: 0.7rem; letter-spacing: 2px; color: #555; text-transform: uppercase; }
+
+        @media (max-width: 768px) {
+            .page-title { font-size: 1.6rem; letter-spacing: 4px; }
+            .slideshow-container { height: 65vh; }
+            .screen-container { margin-top: -40px; aspect-ratio: 16/9; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="fade-overlay"></div>
+
+    <a href="https://wa.me/32479119480" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <nav class="navbar">
+        <a href="index.html" class="transition-link">
+            <img src="https://i.ibb.co/SDWSG04G/Design-sans-titre.png" alt="SONOLOX ÉVÉNEMENT" class="navbar-logo">
+        </a>
+        <div class="nav-controls">
+            <div id="lang-btn" class="lang-btn" onclick="toggleLanguage()">EN</div>
+            <div class="menu-toggle" onclick="toggleMenu()">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="full-menu" id="navMenu">
+        <div class="close-menu" onclick="toggleMenu()">✕</div>
+        <a href="index.html" class="menu-link transition-link" id="nav-home">Accueil</a>
+        <a href="galerie-event.html" class="menu-link transition-link" id="nav-gallery">
+            <i class="fas fa-images"></i> Galerie Photo
+        </a>
+        <a href="javascript:void(0)" class="menu-link" id="nav-info" onclick="openDevis()">
+            <i class="fas fa-info-circle"></i> Renseignements
+        </a>
+        <div class="social-links-menu">
+            <a href="https://www.instagram.com/sonolox_evenement?igsh=c3MweWI3djJ4ZHhx&utm_source=qr" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.facebook.com/share/1DmR39knNJ/?mibextid=wwXIfr" target="_blank"><i class="fab fa-facebook-f"></i></a>
+        </div>
+    </div>
+
+    <div class="modal-devis" id="modalDevis" onclick="closeDevis()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h2 id="modal-title" style="color: var(--gold); margin: 0;">RENSEIGNEMENTS</h2>
+            <p id="modal-desc" style="white-space: nowrap;">Pour toute demande, contactez-nous\u00A0:</p>
+            <div class="email-display" style="background: #222; padding: 15px; border-radius: 10px; margin: 20px 0; font-weight: 700; border: 1px dashed var(--gold); color: var(--gold); word-break: break-all;">Sonolox.event@outlook.com</div>
+            <button class="copy-btn" id="modal-copy" onclick="copyEmail()" style="background: var(--gold); color: #000; border: none; padding: 12px 25px; border-radius: 50px; font-weight: 900; cursor: pointer; text-transform: uppercase;">Copier l'adresse</button>
+            <p style="margin-top: 30px; cursor: pointer; text-decoration: underline;" id="modal-close" onclick="closeDevis()">Fermer</p>
+        </div>
+    </div>
+
+    <div class="slideshow-container">
+        <div id="slides-wrapper"></div>
+        <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+        <a class="next" onclick="plusSlides(1)">&#10095;</a>
+    </div>
+
+    <main class="screen-container">
+        <div class="content-overlay">
+            <h1 class="page-title">SONOLOX ÉVÉNEMENT</h1>
+            <span class="sur-mesure-text" id="txt-surmesure">La réussite de votre événement passe par nous !</span>
+        </div>
+    </main>
+
+    <section class="section-container">
+        <span class="description-highlight" id="txt-highlight">L'EXCELLENCE ET LE PROFESSIONNALISME POUR VOS PROJETS</span>
+        <div class="description-text" id="main-desc"></div>
+        <div class="cta-group">
+            <a href="https://wa.me/32479119480" class="btn btn-whatsapp">📱 +32 479 11 94 80</a>
+            <a href="javascript:void(0)" onclick="openDevis()" class="btn btn-mail" id="btn-mail">✉️ Sonolox.event@outlook.com</a>
+        </div>
+    </section>
+
+    <footer><span class="company-id">BE0792.728.837</span></footer>
+
+    <script>
+        window.addEventListener('load', () => {
+            const overlay = document.getElementById('fade-overlay');
+            overlay.style.opacity = '0';
+        });
+
+        document.querySelectorAll('.transition-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const destination = this.href;
+                const overlay = document.getElementById('fade-overlay');
+                overlay.style.opacity = '1';
+                setTimeout(() => { window.location.href = destination; }, 600);
+            });
+        });
+
+        const photoUrls = [
+            "https://i.ibb.co/wZFnsZj4/IMG-4897.jpg", "https://i.ibb.co/wZCFT7Jj/IMG-4895.jpg",
+            "https://i.ibb.co/Xx1zJk3k/IMG-4972.jpg", "https://i.ibb.co/zVf1V2Y9/IMG-4960.jpg",
+            "https://i.ibb.co/gLkj1qD6/IMG-7492.jpg", "https://i.ibb.co/TDNXh4Nt/IMG-1255.jpg",
+            "https://i.ibb.co/JwmyZHHW/IMG-1251.jpg", "https://i.ibb.co/ksrdYd8f/IMG-3072.jpg",
+            "https://i.ibb.co/vCcnQrc0/IMG-3067.jpg", "https://i.ibb.co/VcThDdPt/IMG-3055.jpg",
+            "https://i.ibb.co/rKgGB76j/IMG-3052.jpg", "https://i.ibb.co/ZpH2DDZ8/IMG-3127.jpg",
+            "https://i.ibb.co/C5x2bKGx/06122025-06122025-A7403574.jpg", "https://i.ibb.co/jPjMWfYT/A7404212.jpg",
+            "https://i.ibb.co/NMTRDRz/A7401193.jpg", "https://i.ibb.co/9HMXR74N/A7404059.jpg",
+            "https://i.ibb.co/4ZTN4VMZ/A7404065.jpg"
+        ];
+
+        let slideIndex = 0;
+        let timer;
+
+        function initSlides() {
+            const wrapper = document.getElementById('slides-wrapper');
+            const shuffled = photoUrls.sort(() => Math.random() - 0.5);
+
+            shuffled.forEach((url, i) => {
+                const div = document.createElement('div');
+                div.className = 'slide' + (i === 0 ? ' active' : '');
+                div.style.backgroundImage = `url('${url}')`;
+                wrapper.appendChild(div);
+            });
+            resetTimer();
+        }
+
+        function plusSlides(n) { showSlides(slideIndex += n); }
+
+        function showSlides(n) {
+            const slides = document.getElementsByClassName("slide");
+            if (slides.length === 0) return;
+            if (n >= slides.length) slideIndex = 0;
+            if (n < 0) slideIndex = slides.length - 1;
+            
+            for (let i = 0; i < slides.length; i++) {
+                slides[i].classList.remove("active");
+            }
+            slides[slideIndex].classList.add("active");
+            resetTimer();
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => plusSlides(1), 5000);
+        }
+
+        let currentLang = 'fr';
+        const translations = {
+            fr: {
+                btn: "EN", home: "Accueil", gallery: "Galerie Photo", info: "Renseignements",
+                surmesure: "La réussite de votre événement passe par nous !",
+                highlight: "L'EXCELLENCE ET LE PROFESSIONNALISME POUR VOS PROJETS",
+                mTitle: "RENSEIGNEMENTS", 
+                mDesc: "Pour toute demande, contactez-nous\u00A0:", 
+                mCopy: "Copier l'adresse", mClose: "Fermer",
+                btnMail: "✉️ Sonolox.event@outlook.com",
+                desc: `<p>Fondé en 2022, <b>Sonolox Événement</b> s’est rapidement développé comme un acteur clé de l’organisation et de la coordination technique des événements qui ont été pris en charge, grâce à notre expérience et à notre vision.</p>
+                       <p>Nous concevons vos projets de <b>A à Z</b>, qu’il s’agisse d’événements privés exclusifs, de soirées professionnelles ou publiques. De la gestion des soirées, à thème ou non, au <b>Café des Touristes</b> à Virelles jusqu'aux concepts « vintage » et soirées à l’ancienne, nous créons des expériences sur mesure qui marquent les esprits.</p>
+                       <p>Notre expertise s’étend également à la <b>production et coordination artistique</b> : gestion de DJ sets, concerts et direction de <b>backstages complets</b>. Nous avons notamment orchestré les coulisses d’événements majeurs tels que la <b>Soirée Plage à Frasnes</b> ou la célèbre <b>Soirée Halloween à Baileux</b>.</p>
+                       <p>Plus qu’un prestataire, nous sommes un levier de réussite. Nous accompagnons les organisateurs dans leurs démarches professionnelles en leur offrant l'accès à un <b>réseau de communication puissant</b> et des partenariats avec des experts du secteur, partout en Belgique, qui répondront à vos besoins.</p>
+                       <p style="text-align: center; margin-top: 30px; color: var(--gold);"><i>N’hésitez pas à nous contacter, nous nous ferons un plaisir de vous répondre.</i></p>`
+            },
+            en: {
+                btn: "FR", home: "Home", gallery: "Photo Gallery", info: "Information",
+                surmesure: "The success of your event starts here!",
+                highlight: "EXCELLENCE AND PROFESSIONALISM FOR YOUR PROJECTS",
+                mTitle: "INFORMATION", 
+                mDesc: "For any request, please contact us:", 
+                mCopy: "Copy Email", mClose: "Close",
+                btnMail: "✉️ Contact us",
+                desc: `<p>Founded in 2022, <b>Sonolox Événement</b> has quickly grown into a key player in the organization and technical coordination of managed events, thanks to our experience and vision.</p>
+                       <p>We design your projects from <b>A to Z</b>, whether for exclusive private events, professional, or public parties. From managing themed (or non-themed) nights at <b>Café des Touristes</b> in Virelles to "vintage" concepts and old-school parties, we create tailor-made experiences.</p>
+                       <p>Our expertise also extends to <b>artistic production and coordination</b>: management of DJ sets, concerts, and <b>full backstage direction</b>. We have notably orchestrated the behind-the-scenes of major events such as the <b>Frasnes Beach Party</b> or the famous <b>Baileux Halloween Party</b>.</p>
+                       <p>More than just a provider, we are a catalyst for success. We assist organizers in their professional steps by offering access to a <b>powerful communication network</b> and partnerships with industry experts across Belgium to meet your needs.</p>
+                       <p style="text-align: center; margin-top: 30px; color: var(--gold);"><i>Don't hesitate to contact us, we will be happy to answer you.</i></p>`
+            }
+        };
+
+        function toggleLanguage() { currentLang = (currentLang === 'fr') ? 'en' : 'fr'; updateContent(); }
+        function updateContent() {
+            const t = translations[currentLang];
+            document.getElementById('lang-btn').innerText = t.btn;
+            document.getElementById('nav-home').innerText = t.home;
+            document.getElementById('nav-gallery').innerHTML = `<i class="fas fa-images"></i> ${t.gallery}`;
+            document.getElementById('nav-info').innerHTML = `<i class="fas fa-info-circle"></i> ${t.info}`;
+            document.getElementById('txt-surmesure').innerText = t.surmesure;
+            document.getElementById('txt-highlight').innerText = t.highlight;
+            document.getElementById('main-desc').innerHTML = t.desc;
+            document.getElementById('btn-mail').innerText = t.btnMail;
+            document.getElementById('modal-title').innerText = t.mTitle;
+            document.getElementById('modal-desc').innerText = t.mDesc;
+            document.getElementById('modal-copy').innerText = t.mCopy;
+            document.getElementById('modal-close').innerText = t.mClose;
+        }
+
+        function toggleMenu() { document.getElementById('navMenu').classList.toggle('active'); }
+        function openDevis() { if(document.getElementById('navMenu').classList.contains('active')) toggleMenu(); document.getElementById('modalDevis').style.display = 'flex'; }
+        function closeDevis() { document.getElementById('modalDevis').style.display = 'none'; }
+        function copyEmail() { 
+            navigator.clipboard.writeText("Sonolox.event@outlook.com").then(() => {
+                const b = document.getElementById('modal-copy');
+                b.innerText = (currentLang === 'fr') ? "COPIÉ !" : "COPIED!";
+                setTimeout(() => b.innerText = translations[currentLang].mCopy, 2000);
+            });
+        }
+
+        window.onload = () => { initSlides(); updateContent(); };
+    </script>
+</body>
+</html>

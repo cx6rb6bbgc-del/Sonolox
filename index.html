@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SONOLOX | Accueil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-glow: #00f2ff;
+            --secondary-glow: #ffffff;
+            --font-main: 'Montserrat', sans-serif;
+        }
+
+        body, html {
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            font-family: var(--font-main); background-color: #000;
+            color: #fff; display: flex; flex-direction: column;
+            align-items: center; 
+            justify-content: flex-start;
+            overflow: hidden;
+        }
+
+        /* --- OVERLAY DE TRANSITION --- */
+        #fade-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: black; z-index: 9999; pointer-events: none;
+            opacity: 0; transition: opacity 0.6s ease-in-out;
+        }
+
+        /* --- LOGOS --- */
+        .header-section {
+            text-align: center; z-index: 100;
+            animation: fadeInDown 1s ease forwards;
+            display: flex; flex-direction: column;
+            align-items: center; margin-top: 25px;
+        }
+
+        .logo-area {
+            position: relative; width: 350px; height: 110px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .logo-switch {
+            position: absolute; max-width: 100%; height: auto;
+            opacity: 0; transition: opacity 1s ease-in-out;
+            animation: neonFlickerLogo 5s infinite;
+        }
+
+        .logo-switch.active { opacity: 1; }
+        .logo-txt { width: 320px; }
+        .logo-emb { width: 140px; }
+
+        @keyframes neonFlickerLogo {
+            0%, 2%, 4%, 6% { filter: brightness(0.5) drop-shadow(0 0 0px #fff); }
+            1%, 3%, 5% { filter: brightness(1.2) drop-shadow(0 0 15px #fff); }
+            7%, 92% { filter: brightness(1.1) drop-shadow(0 0 10px rgba(255,255,255,0.6)); }
+            93% { filter: brightness(0.6); }
+            94% { filter: brightness(1.2) drop-shadow(0 0 20px #fff); }
+        }
+
+        /* --- CONTENU --- */
+        .welcome-title {
+            margin-top: 12vh; font-size: 2.8rem; font-weight: 700; 
+            letter-spacing: 12px; text-transform: uppercase; 
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+            animation: fadeInDown 1.2s ease forwards;
+        }
+
+        .tagline {
+            font-size: 0.8rem; font-weight: 300; letter-spacing: 4px;
+            text-transform: uppercase; color: rgba(255, 255, 255, 0.7);
+            margin: 15px 0 25px 0; text-align: center;
+            animation: fadeInDown 1.4s ease forwards;
+        }
+        
+        .tagline span { display: block; font-weight: 700; color: #fff; letter-spacing: 6px; margin-top: 5px; }
+
+        .screen-container {
+            position: relative; width: 94%; max-width: 1100px; height: 38vh;
+            background-color: #111; border-radius: 4px; 
+            box-shadow: 0 0 60px rgba(0, 0, 0, 1);
+            overflow: hidden; border: 1px solid #222;
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        .hero-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://i.ibb.co/Z6tRCfBJ/IMG-8976.jpg');
+            background-size: cover; background-position: center 30%; 
+            filter: brightness(0.55) contrast(1.1); z-index: 1;
+        }
+
+        .content-overlay {
+            position: relative; z-index: 2; width: 100%; height: 100%;
+            display: flex; align-items: flex-end; justify-content: center;
+            padding: 30px; box-sizing: border-box;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+        }
+
+        /* --- BOUTONS AVEC EFFET SHINE --- */
+        .cta-section { display: flex; gap: 20px; justify-content: center; width: 100%; max-width: 800px; }
+
+        .cta-btn {
+            flex: 1; padding: 18px 25px; font-size: 0.85rem;
+            font-weight: 700; text-transform: uppercase;
+            text-decoration: none; letter-spacing: 2px;
+            border-radius: 4px; text-align: center;
+            white-space: nowrap; transition: 0.4s;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            position: relative; overflow: hidden;
+        }
+
+        /* Effet de balayage lumineux sur les boutons */
+        .cta-btn::after {
+            content: ''; position: absolute; top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        .cta-btn:hover::after { left: 100%; }
+
+        .btn-dj { color: var(--primary-glow); border: 1px solid var(--primary-glow); box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); animation: neonFlickerButtons 5s infinite; }
+        .btn-dj:hover { background: var(--primary-glow); color: #000; box-shadow: 0 0 35px var(--primary-glow); transform: translateY(-3px); }
+
+        .btn-event { color: var(--secondary-glow); border: 1px solid var(--secondary-glow); box-shadow: 0 0 15px rgba(255, 255, 255, 0.1); animation: neonFlickerButtons 5s infinite 0.5s; }
+        .btn-event:hover { background: var(--secondary-glow); color: #000; box-shadow: 0 0 35px var(--secondary-glow); transform: translateY(-3px); }
+
+        @keyframes neonFlickerButtons {
+            0%, 2%, 4%, 6% { opacity: 0.7; }
+            1%, 3%, 5% { opacity: 1; }
+            7%, 92% { opacity: 1; }
+        }
+
+        .footer-home { position: absolute; bottom: 15px; text-align: center; width: 100%; z-index: 100; }
+        .company-id { font-size: 0.7rem; letter-spacing: 4px; color: rgba(255, 255, 255, 0.4); font-weight: 300; }
+
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 768px) {
+            .logo-area { width: 260px; height: 80px; }
+            .welcome-title { font-size: 1.8rem; letter-spacing: 6px; margin-top: 8vh; }
+            .screen-container { height: 45vh; }
+            .cta-section { flex-direction: column; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="fade-overlay"></div>
+
+    <header class="header-section">
+        <div class="logo-area">
+            <img src="https://i.ibb.co/k6Xb6j2y/Sonolox-Logo-blanc.png" alt="SONOLOX" class="logo-switch logo-txt active">
+            <img src="https://i.ibb.co/SDWSG04G/Design-sans-titre.png" alt="Emblème" class="logo-switch logo-emb">
+        </div>
+    </header>
+
+    <h1 class="welcome-title">Bienvenue</h1>
+    
+    <p class="tagline">
+        Votre demande sur mesure ?
+        <span>C’est possible !</span>
+    </p>
+
+    <main class="screen-container">
+        <div class="hero-bg"></div>
+        <div class="content-overlay">
+            <div class="cta-section">
+                <a href="dj.html" class="cta-btn btn-dj transition-link">DJ SONOLOX</a>
+                <a href="event.html" class="cta-btn btn-event transition-link">SONOLOX ÉVÉNEMENT</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer-home">
+        <span class="company-id">BE 0792.728.837</span>
+    </footer>
+
+    <script>
+        // --- ROTATION LOGO ---
+        const logos = document.querySelectorAll('.logo-switch');
+        let currentIdx = 0;
+        function rotateLogo() {
+            logos[currentIdx].classList.remove('active');
+            currentIdx = (currentIdx + 1) % logos.length;
+            logos[currentIdx].classList.add('active');
+        }
+        setInterval(rotateLogo, 5000);
+
+        // --- GESTION DES TRANSITIONS DE PAGE ---
+        document.querySelectorAll('.transition-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault(); // Empêche le départ immédiat
+                const destination = this.href;
+                const overlay = document.getElementById('fade-overlay');
+                
+                overlay.style.opacity = '1'; // Lance le fondu au noir
+                
+                setTimeout(() => {
+                    window.location.href = destination;
+                }, 600); // Délai identique à la transition CSS (0.6s)
+            });
+        });
+    </script>
+
+</body>
+</html>
